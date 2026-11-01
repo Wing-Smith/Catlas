@@ -1,0 +1,18 @@
+# 数据层（建议官方 PyPI：pip install -i https://pypi.org/simple -r requirements.txt）
+geopandas>=1.1
+shapely>=2.1
+pyogrio>=0.11
+pyarrow>=18
+requests>=2.32
+tenacity>=9.0
+platformdirs>=4.3
+matplotlib>=3.10
+pytest>=8.0
+cryptography>=44.0
+windows-toasts>=1.3
+# GUI 层（国内慢可单独换阿里云镜像安装以下 5 个包）
+PySide6-Essentials>=6.10
+PySideSix-Frameless-Window>=0.8
+darkdetect
+pywin32
+PySide6-Fluent-Widgets>=1.11
