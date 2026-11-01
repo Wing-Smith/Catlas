@@ -11,7 +11,7 @@
 #define MyAppName      "Catlas"
 #define MyAppVersion   "1.2.7"
 #define MyAppPublisher "Wing North Studio"
-#define MyAppURL       "https://example.com/catlas"
+#define MyAppURL       "https://github.com/Wing-Smith/Catlas"
 #define MyAppExe       "Catlas.exe"
 #define MyAppId        "{3ACA8653-2F01-11E9-B04B-FAD5F7370A27}"
 
