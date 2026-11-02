@@ -1,6 +1,7 @@
 # Catlas（猫图集）— OSM 地理数据自动抓取与制图工具
 
 [![Release](https://img.shields.io/github/v/release/Wing-Smith/Catlas)](https://github.com/Wing-Smith/Catlas/releases)
+[![Platform](https://img.shields.io/badge/Windows-0078D6?style=flat&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/license-ODbL%20data-blue)](https://www.openstreetmap.org/copyright)
 
 输入任意地名或坐标范围，自动从 OpenStreetMap 抓取**路网、水域、绿地、建筑**数据，
