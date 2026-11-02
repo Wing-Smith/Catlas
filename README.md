@@ -19,7 +19,7 @@
 
 - GUI：PySide6 + PySide6-Fluent-Widgets，Windows 11 Mica 毛玻璃
 - 数据：Overpass API 多镜像探测 + 过载退避重试 + 网格分块 + 本地 parquet 缓存
-- 纯 Python 3.14（Windows），core 层零 GUI 依赖，可独立做二次开发
+- 纯 Python 3.14（Windows），core 层零 GUI 依赖
 
 ## 下载
 
