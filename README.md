@@ -1,11 +1,21 @@
-# Catlas（猫图集）— OSM 地理数据自动抓取与制图工具
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/Wing-Smith/Catlas/main/app/assets/icon.png" width="128" alt="Catlas">
+
+# Catlas（猫图集）
+
+**OSM 地理数据自动抓取与制图工具**
+
+输入任意地名或坐标范围，自动从 OpenStreetMap 抓取**路网、水域、绿地、建筑**数据，
+清洗后导出 GeoJSON / GeoPackage / Shapefile，并渲染为 SVG / PNG 地图。
 
 [![release](https://img.shields.io/github/v/release/Wing-Smith/Catlas?label=release&color=orange)](https://github.com/Wing-Smith/Catlas/releases)
 [![downloads](https://img.shields.io/github/downloads/Wing-Smith/Catlas/total?label=downloads&color=brightgreen)](https://github.com/Wing-Smith/Catlas/releases)
 [![license](https://img.shields.io/badge/license-ODbL%20data-orange)](https://www.openstreetmap.org/copyright)
 
-输入任意地名或坐标范围，自动从 OpenStreetMap 抓取**路网、水域、绿地、建筑**数据，
-清洗后导出 GeoJSON / GeoPackage / Shapefile，并渲染为 SVG / PNG 地图。
+[下载](https://github.com/Wing-Smith/Catlas/releases/latest) · [更新日志](https://github.com/Wing-Smith/Catlas/releases) · [从源码构建](#打包)
+
+</div>
 
 - GUI：PySide6 + PySide6-Fluent-Widgets，Windows 11 Mica 毛玻璃
 - 数据：Overpass API 多镜像探测 + 过载退避重试 + 网格分块 + 本地 parquet 缓存
