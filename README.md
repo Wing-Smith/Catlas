@@ -1,4 +1,7 @@
-# OSM 地理数据自动抓取与制图工具
+# Catlas（猫图集）— OSM 地理数据自动抓取与制图工具
+
+[![Release](https://img.shields.io/github/v/release/Wing-Smith/Catlas)](https://github.com/Wing-Smith/Catlas/releases)
+[![License](https://img.shields.io/badge/license-ODbL%20data-blue)](https://www.openstreetmap.org/copyright)
 
 输入任意地名或坐标范围，自动从 OpenStreetMap 抓取**路网、水域、绿地、建筑**数据，
 清洗后导出 GeoJSON / GeoPackage / Shapefile，并渲染为 SVG / PNG 地图。
@@ -6,6 +9,15 @@
 - GUI：PySide6 + PySide6-Fluent-Widgets，Windows 11 Mica 毛玻璃
 - 数据：Overpass API 多镜像探测 + 过载退避重试 + 网格分块 + 本地 parquet 缓存
 - 纯 Python 3.14（Windows），core 层零 GUI 依赖，可独立做二次开发
+
+## 下载
+
+**[最新版 v1.2.7 已发布 → Releases 页面](https://github.com/Wing-Smith/Catlas/releases/latest)**
+
+下载 `Catlas-Setup-1.2.7.exe` 双击安装即可（Windows 10 1809+，64 位）。
+应用内置自动更新检测，新版本发布后会自动提醒。
+
+> 地图数据 © OpenStreetMap contributors（ODbL）；Esri World Imagery 卫星底图仅限软件内在线预览，禁止导出。
 
 ## 安装
 
@@ -40,12 +52,16 @@ CLI（同一份 core 管线）：
 .venv\Scripts\python.exe -m app.cli --clear-cache
 ```
 
-打包 exe（需先装好全部依赖）：
+打包（需先装好全部依赖）：
 
-```bash
-.venv\Scripts\python.exe scripts\build_exe.py
-# 产物：dist\OSMMapTool.exe
+```powershell
+# Nuitka standalone 编译（MVSC，jobs 按机器调整）
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_nuitka.ps1
+# Inno Setup 安装包（需先安装 Inno Setup 7）
+# 用 Inno 打开 installer\catlas.iss 编译，产物 Release\installer\Catlas-Setup-x.y.z.exe
 ```
+
+在程序目录或 exe 旁放置 `portable.flag` 可启用便携模式（数据写入 `CatlasData/`，不写注册表目录）。
 
 ## 架构
 
