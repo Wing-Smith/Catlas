@@ -47,7 +47,7 @@ from app.ui.preview.map_canvas import MapCanvas
 class _UpdateChecker(QObject):
     """后台线程跑更新检查，Signal 桥接回主线程（Qt 队列连接线程安全）。"""
 
-    result = Signal(object)  # ReleaseInfo | Exception | None
+    result = Signal(object)  # updater.UpdateStatus
 
     def start(self) -> None:
         import threading
@@ -57,10 +57,7 @@ class _UpdateChecker(QObject):
     def _run(self) -> None:
         from app.core import updater
 
-        try:
-            self.result.emit(updater.check_latest())
-        except Exception as exc:  # noqa: BLE001
-            self.result.emit(exc)
+        self.result.emit(updater.check_status())
 
 
 class MainWindow(FluentWindow):
@@ -211,41 +208,79 @@ class MainWindow(FluentWindow):
 
         self._center_on_screen()
 
-        # 启动 2.5s 后后台检查更新（未配置 update_url 时直接跳过，静默无扰）
+        # 启动 2.5s 后后台检查更新（内置默认地址，网络不通时静默记录到主页卡片）
         self._update_checker = _UpdateChecker(self)
         self._update_checker.result.connect(self._on_update_result)
+        self.home_page.update_check_requested.connect(self._update_checker.start)
         QTimer.singleShot(2500, self._check_update)
 
     def _check_update(self) -> None:
-        if (SETTINGS.update_url or "").strip():
-            self._update_checker.start()
+        self._update_checker.start()
 
-    def _on_update_result(self, result) -> None:
-        from qfluentwidgets import PushButton
+    def _on_update_result(self, status) -> None:
+        from app.core.updater import UpdateStatus
 
-        from app.core.updater import ReleaseInfo
-
-        if not isinstance(result, ReleaseInfo):
-            return  # None=未配置/解析失败，Exception=网络错误：均静默
+        if not isinstance(status, UpdateStatus):
+            return
+        self.home_page.show_update_status(status)
+        if not (status.connected and status.latest):
+            return
         from app.core import updater
 
-        if not updater.is_newer(result.version):
+        if updater.is_older(status.latest):
+            self._show_dev_build_notice()
             return
-        bar = InfoBar.info(
-            title=tr("update.new", v=result.version),
-            content="",
-            orient=Qt.Orientation.Horizontal,
-            isClosable=True,
-            duration=-1,
-            position=InfoBarPosition.TOP_RIGHT,
-            parent=self,
-        )
-        btn = PushButton(tr("update.go"))
+        if not updater.is_newer(status.latest):
+            return
+        self._notify_new_release(status)
+
+    def _notify_new_release(self, status) -> None:
+        """发现新版本：系统通知 + 主页可关闭警告横幅（每次启动默认显示）。"""
         import webbrowser
 
-        btn.clicked.connect(lambda: webbrowser.open(result.url))
+        from qfluentwidgets import InfoBar, InfoBarPosition, PushButton
+
+        from app.services.notify import notify_system
+
+        if not getattr(self, "_update_toast_sent", False):
+            self._update_toast_sent = True
+            notify_system(
+                tr("update.new", v=status.latest),
+                tr("update.toast", url=status.url),
+            )
+        if getattr(self, "_update_banner", None) is not None:
+            return
+        bar = InfoBar.warning(
+            title=tr("update.new", v=status.latest),
+            content=tr("update.banner_content"),
+            orient=Qt.Orientation.Horizontal,
+            isClosable=True,
+            duration=-1,  # 不自动消失，用户手动关闭；下次启动重新出现
+            position=InfoBarPosition.TOP,
+            parent=self.home_page,
+        )
+        btn = PushButton(tr("update.go"))
+        btn.clicked.connect(lambda: webbrowser.open(status.url))
         bar.addWidget(btn)
         bar.show()
+        self._update_banner = bar
+
+    def _show_dev_build_notice(self) -> None:
+        """本地版本新于 GitHub 最新发行版：弹未发行版本警告（每次启动一次）。"""
+        if getattr(self, "_dev_notice_shown", False):
+            return
+        self._dev_notice_shown = True
+        box = MessageBox(tr("update.dev.title"), tr("update.dev.content"), self)
+        box.yesButton.setText(tr("update.dev.go"))
+        box.cancelButton.setText(tr("update.dev.ok"))
+        if box.exec():
+            import webbrowser
+
+            from app.core.updater import RELEASES_PAGE
+
+            webbrowser.open(RELEASES_PAGE)
+            self._force_quit = True  # 绕过退出确认
+            self.close()
 
     def _on_home_navigate(self, route_key: str) -> None:
         """主页磁贴 / 卡片按钮跳转。"""
@@ -266,7 +301,10 @@ class MainWindow(FluentWindow):
         self.move(geo.topLeft())
 
     def closeEvent(self, event) -> None:  # noqa: N802
-        """关闭前挽留确认。"""
+        """关闭前挽留确认（未发行版引导下载等场景直接放行）。"""
+        if getattr(self, "_force_quit", False):
+            event.accept()
+            return
         box = MessageBox(tr("exit.title"), tr("exit.content"), self)
         box.yesButton.setText(tr("exit.quit"))
         box.cancelButton.setText(tr("exit.cancel"))

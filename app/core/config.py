@@ -64,7 +64,7 @@ DEFAULT_OVERPASS_ENDPOINTS = [
 
 DEFAULT_NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
-USER_AGENT = "Catlas/1.2.7 (OSM geodata tool)"
+USER_AGENT = "Catlas/1.2.9 (OSM geodata tool)"
 
 
 @dataclass
@@ -88,8 +88,8 @@ class Settings:
     pet_corner: bool = False
     # 首次启动引导（看完即置 False，不再显示）
     first_run: bool = True
-    # 自动更新检查：GitHub Releases API 地址，留空关闭
-    update_url: str = "https://api.github.com/repos/Wing-Smith/Catlas/releases/latest"
+    # 自动更新检查：GitHub Releases API 地址，留空则用内置默认（本仓库）
+    update_url: str = ""
 
     @classmethod
     def load(cls) -> "Settings":

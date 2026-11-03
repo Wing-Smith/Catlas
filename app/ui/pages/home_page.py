@@ -118,6 +118,7 @@ class HomePage(QWidget):
     btn_start_clicked = QtCore.Signal()
     btn_draw_clicked = QtCore.Signal()
     navigate_requested = QtCore.Signal(str)  # routeKey，如 "historyPage"
+    update_check_requested = QtCore.Signal()  # 请求主窗口跑一次更新检查
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -239,6 +240,19 @@ class HomePage(QWidget):
         self.card_about.body.addLayout(about_btn_row)
         bottom_row.addWidget(self.card_about, stretch=1)
 
+        # ---------------- 更新检测：连接状态 + 版本对比 ----------------
+        self.card_update = _Card()
+        self.update_conn_key, self.update_conn_value = self.card_update._kv("")
+        self.update_cur_key, self.update_cur_value = self.card_update._kv("")
+        self.update_latest_key, self.update_latest_value = self.card_update._kv("")
+        upd_btn_row = QHBoxLayout()
+        self.btn_check_update = PushButton("")
+        self.btn_check_update.clicked.connect(self._on_check_update_clicked)
+        upd_btn_row.addWidget(self.btn_check_update)
+        upd_btn_row.addStretch(1)
+        self.card_update.body.addLayout(upd_btn_row)
+        bottom_row.addWidget(self.card_update, stretch=1)
+
         layout.addLayout(bottom_row)
 
         # ---------------- Calico 电子宠物（默认隐藏，关于页图标连点 7 次解锁） ----------------
@@ -248,6 +262,7 @@ class HomePage(QWidget):
         self.card_pet.setVisible(SETTINGS.pet_corner)
         layout.addWidget(self.card_pet)
 
+        self._last_update_status = None  # UpdateStatus | None，供 retranslate 后重绘
         self.retranslate_ui()
         self.refresh_stats()
 
@@ -277,11 +292,55 @@ class HomePage(QWidget):
         )
         self.about_copyright.setText(tr("settings.copyright"))
         self.btn_view_eula.setText(tr("home.view_eula"))
+        self.card_update.title_label.setText(tr("home.card_update"))
+        self.update_conn_key.setText(tr("home.update_conn"))
+        self.update_cur_key.setText(tr("home.update_current"))
+        self.update_latest_key.setText(tr("home.update_latest"))
+        self.btn_check_update.setText(tr("home.update_btn"))
+        self.show_update_status(self._last_update_status)
         self.card_pet.title_label.setText(tr("home.pet.title"))
         self.pet_area.retranslate_ui()
         self._build_network_rows()
         if not self.last_label.text():
             self.last_label.setText(tr("home.fetch_none"))
+
+    # ------------------------------------------------------------------ 更新检测卡片
+
+    def _on_check_update_clicked(self) -> None:
+        self.btn_check_update.setEnabled(False)
+        self.update_conn_value.setText(tr("home.update_checking"))
+        self.update_conn_value.setStyleSheet("color: #8a8a8a; background: transparent;")
+        self.update_latest_value.setText("—")
+        self.update_check_requested.emit()
+
+    def show_update_status(self, status) -> None:
+        """渲染一次更新检查结果（status 为 updater.UpdateStatus | None）。"""
+        from app.core.updater import UpdateStatus
+
+        self._last_update_status = status
+        self.btn_check_update.setEnabled(True)
+        if status is not None:
+            self.update_cur_value.setText(f"v{status.current}")
+        if status is None:
+            self.update_conn_value.setText(tr("home.update_unknown"))
+            self.update_conn_value.setStyleSheet("color: #8a8a8a; background: transparent;")
+            self.update_latest_value.setText("—")
+            return
+        if status.checking:
+            self.update_conn_value.setText(tr("home.update_checking"))
+            self.update_conn_value.setStyleSheet("color: #8a8a8a; background: transparent;")
+            self.btn_check_update.setEnabled(False)
+            return
+        if status.connected:
+            self.update_conn_value.setText(tr("home.update_conn_ok"))
+            self.update_conn_value.setStyleSheet("color: #2EA043; background: transparent;")
+            self.update_conn_value.setToolTip("")
+        else:
+            self.update_conn_value.setText(tr("home.update_conn_fail"))
+            self.update_conn_value.setStyleSheet("color: #E5484D; background: transparent;")
+            self.update_conn_value.setToolTip(status.error or "")
+        self.update_cur_value.setText(f"v{status.current}")
+        self.update_latest_value.setText(f"v{status.latest}" if status.latest else "—")
 
     # ------------------------------------------------------------------ 卡片内容
 

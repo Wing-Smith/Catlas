@@ -97,6 +97,7 @@ class SettingsPage(QWidget):
     language_changed = Signal(str)
     theme_changed = Signal(str)
     pet_toggled = Signal(bool)
+    update_status_ready = Signal(object)  # updater.UpdateStatus，检查线程回投
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -155,11 +156,26 @@ class SettingsPage(QWidget):
 
         self.update_edit = LineEdit()
         self.update_edit.setPlaceholderText(
-            "https://api.github.com/repos/<owner>/<repo>/releases/latest"
+            "留空 = 内置地址（github.com/Wing-Smith/Catlas）"
         )
         self.update_edit.setText(SETTINGS.update_url)
         self.update_edit.setClearButtonEnabled(True)
         form.addRow("", self.update_edit)
+
+        # 手动检查更新：按钮 + 状态文字
+        self.btn_check_update = PushButton("")
+        self.btn_check_update.clicked.connect(self._check_update_now)
+        self.update_status_label = CaptionLabel("")
+        self.update_status_label.setWordWrap(True)
+        upd_row_widget = QWidget()
+        upd_row_widget.setStyleSheet("background: transparent;")
+        upd_row = QHBoxLayout(upd_row_widget)
+        upd_row.setContentsMargins(0, 0, 0, 0)
+        upd_row.setSpacing(10)
+        upd_row.addWidget(self.btn_check_update)
+        upd_row.addWidget(self.update_status_label, stretch=1)
+        form.addRow("", upd_row_widget)
+        self.update_status_ready.connect(self._on_update_status)
 
         self.hint = CaptionLabel("")
         self.hint.setWordWrap(True)
@@ -253,6 +269,42 @@ class SettingsPage(QWidget):
         self.about_text.setText(tr("settings.about_text"))
         self.about_copyright.setText(tr("settings.copyright"))
         self.btn_eula.setText(tr("settings.eula"))
+        self.btn_check_update.setText(tr("update.check_now"))
+
+    # ------------------------------------------------------------------ 更新检查
+
+    def _check_update_now(self) -> None:
+        self.btn_check_update.setEnabled(False)
+        self.update_status_label.setStyleSheet("color: #8a8a8a; background: transparent;")
+        self.update_status_label.setText(tr("update.checking"))
+        import threading
+
+        threading.Thread(target=self._run_update_check, daemon=True).start()
+
+    def _run_update_check(self) -> None:
+        from app.core import updater
+
+        self.update_status_ready.emit(updater.check_status())
+
+    def _on_update_status(self, status) -> None:
+        from app.core import updater
+
+        self.btn_check_update.setEnabled(True)
+        if not status.connected:
+            self.update_status_label.setStyleSheet("color: #E5484D; background: transparent;")
+            self.update_status_label.setText(tr("update.failed", err=status.error or "?"))
+            self.update_status_label.setToolTip(status.error or "")
+            return
+        self.update_status_label.setToolTip("")
+        if status.latest and updater.is_newer(status.latest):
+            self.update_status_label.setStyleSheet("color: #B26A00; background: transparent;")
+            self.update_status_label.setText(tr("update.found", v=status.latest))
+            import webbrowser
+
+            webbrowser.open(status.url)
+        else:
+            self.update_status_label.setStyleSheet("color: #2EA043; background: transparent;")
+            self.update_status_label.setText(tr("update.latest", v=status.latest or APP_VERSION))
 
     def _on_language(self) -> None:
         lang = self.language_combo.currentData()

@@ -67,31 +67,34 @@ function Build-Catlas {
         Write-Host "  Cleaned old folder: $output" -ForegroundColor DarkGray
     }
 
-    $cmd = "& `"$pythonPath`" -m nuitka --standalone --remove-output --assume-yes-for-downloads --msvc=latest " +
-        "--jobs=15 --lto=no " +
-        "--enable-plugin=pyside6 " +
-        "--windows-console-mode=disable " +
-        "--windows-icon-from-ico=app/assets/app.ico " +
-        "--file-version=$version --product-version=$version " +
-        "--product-name=Catlas --file-description='Catlas - OSM geodata tool' " +
-        "--copyright='Copyright (c) 2026 Wing North Studio' " +
-        "--output-filename=Catlas.exe --output-dir=dist_nuitka " +
-        "--include-package=app --include-package=pyogrio --include-package=pyarrow " +
-        "--include-package=geopandas --include-package=shapely --include-package=darkdetect " +
-        "--include-package=windows_toasts --include-package=winrt " +
-        "--include-package-data=matplotlib --include-package-data=qfluentwidgets --include-package-data=PySide6 " +
-        "--include-data-dir=app/assets=app/assets " +
-        "--include-data-dir=app/data/world=app/data/world " +
-        "--include-data-files=app/data/pet_quotes_zh.txt=app/data/pet_quotes_zh.txt " +
-        "--include-data-files=app/data/pet_quotes_en.txt=app/data/pet_quotes_en.txt " +
+    # 编译参数（数组形式，避免引号转义问题）
+    $cmdArgs = @(
+        "-m", "nuitka",
+        "--standalone", "--remove-output", "--assume-yes-for-downloads", "--msvc=latest",
+        "--jobs=15", "--lto=no",
+        "--enable-plugin=pyside6",
+        "--windows-console-mode=disable",
+        "--windows-icon-from-ico=app/assets/app.ico",
+        "--file-version=$version", "--product-version=$version",
+        "--product-name=Catlas", "--file-description=Catlas - OSM geodata tool",
+        "--copyright=Copyright (c) 2026 Wing North Studio",
+        "--output-filename=Catlas.exe", "--output-dir=dist_nuitka",
+        "--include-package=app", "--include-package=pyogrio", "--include-package=pyarrow",
+        "--include-package=geopandas", "--include-package=shapely", "--include-package=darkdetect",
+        "--include-package=windows_toasts", "--include-package=winrt",
+        "--include-package-data=matplotlib", "--include-package-data=qfluentwidgets", "--include-package-data=PySide6",
+        "--include-data-dir=app/assets=app/assets",
+        "--include-data-dir=app/data/world=app/data/world",
+        "--include-data-files=app/data/pet_quotes_zh.txt=app/data/pet_quotes_zh.txt",
+        "--include-data-files=app/data/pet_quotes_en.txt=app/data/pet_quotes_en.txt",
         "app/main.py"
-    Write-Host "  Command: $cmd" -ForegroundColor DarkGray
+    )
+    Write-Host ("  Command: " + ($cmdArgs -join " ")) -ForegroundColor DarkGray
 
-    # 直接在当前终端构建，输出实时可见（Ctrl+C 可中断）
-    # 注意：不要对输出做管道过滤 —— PowerShell 管道会吞掉 \r 进度刷新并整体缓冲，
-    # 导致进度条与灰色提示全部消失（已踩坑回滚）。
+    # 直接在当前终端构建：进度条（\r 刷新）与彩色输出均为原生行为。
+    # 注意：不要对输出做管道/文件重定向 —— 会导致进度条与颜色消失（已踩坑回滚）。
     Write-Host "  Compiling... (large app, expect 10-30 min)" -ForegroundColor Yellow
-    Invoke-Expression $cmd
+    & $pythonPath @cmdArgs
     $exitCode = $LASTEXITCODE
     Write-Host ""
     if ($exitCode -eq 0) { Write-Host "[OK] Build succeeded." -ForegroundColor Green }
