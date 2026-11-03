@@ -64,7 +64,7 @@ DEFAULT_OVERPASS_ENDPOINTS = [
 
 DEFAULT_NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
-USER_AGENT = "Catlas/1.3.1 (OSM geodata tool)"
+USER_AGENT = "Catlas/1.3.2 (OSM geodata tool)"
 
 
 @dataclass

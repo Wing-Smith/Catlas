@@ -390,11 +390,12 @@ class MainWindow(FluentWindow):
         self.settings_page.retranslate_ui()
 
     def _on_theme(self, theme: str) -> None:
-        from qfluentwidgets import setTheme
+        from app.ui.theme import apply_fluent_theme
 
-        from app.ui.theme import _THEMES
-
-        setTheme(_THEMES.get(theme, _THEMES["auto"]))
+        apply_fluent_theme(theme)  # setTheme + Fusion 样式 + 调色板同步
+        # Mica 的明暗标志在启用时固化，切换主题后重刷一次
+        self.setMicaEffectEnabled(False)
+        self.setMicaEffectEnabled(True)
         self.draw_page.refresh_theme()
         self.home_page.pet_area.restyle()
 
