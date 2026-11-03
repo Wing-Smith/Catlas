@@ -125,7 +125,21 @@ class HomePage(QWidget):
         self.setObjectName("homePage")
         self.setStyleSheet("background: transparent;")
 
-        layout = QVBoxLayout(self)
+        # 小屏适配：内容整体放进垂直滚动区，窗口不再被内容顶出最小高度
+        from qfluentwidgets import SingleDirectionScrollArea
+
+        scroll = SingleDirectionScrollArea(self)
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background: transparent; border: none;")
+        content = QWidget()
+        content.setStyleSheet("background: transparent;")
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+        outer.addWidget(scroll)
+        scroll.setWidget(content)
+
+        layout = QVBoxLayout(content)
         layout.setContentsMargins(20, 16, 20, 14)
         layout.setSpacing(12)
 

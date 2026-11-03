@@ -25,7 +25,7 @@
 
 **[最新版 v1.2.7 已发布 → Releases 页面](https://github.com/Wing-Smith/Catlas/releases/latest)**
 
-下载 `Catlas-Setup-1.2.9.exe` 双击安装即可（Windows 10 1809+，64 位）。
+下载 `Catlas-Setup-1.3.1.exe` 双击安装即可（Windows 10 1809+，64 位）。
 应用内置自动更新检测，新版本发布后会自动提醒。
 
 > 地图数据 © OpenStreetMap contributors（ODbL）；Esri World Imagery 卫星底图仅限软件内在线预览，禁止导出。

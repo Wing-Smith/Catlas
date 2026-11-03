@@ -1,5 +1,5 @@
 ; ============================================================
-; Catlas 1.2.9 安装脚本（Inno Setup 7 适配）
+; Catlas 1.3.1 安装脚本（Inno Setup 7 适配）
 ; 依赖的 7 代特性：
 ;   - WizardStyle=modern dynamic   向导跟随 Windows 明暗模式（6.6+）
 ;   - WizardImageFile 支持 PNG     向导图无需转 BMP（6.5.2+）
@@ -9,7 +9,7 @@
 ; ============================================================
 
 #define MyAppName      "Catlas"
-#define MyAppVersion   "1.2.9"
+#define MyAppVersion   "1.3.1"
 #define MyAppPublisher "Wing North Studio"
 #define MyAppURL       "https://github.com/Wing-Smith/Catlas"
 #define MyAppExe       "Catlas.exe"

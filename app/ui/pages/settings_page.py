@@ -104,7 +104,21 @@ class SettingsPage(QWidget):
         self.setObjectName("settingsPage")
         self.setStyleSheet("background: transparent;")
 
-        layout = QVBoxLayout(self)
+        # 小屏适配：内容整体放进垂直滚动区
+        from qfluentwidgets import SingleDirectionScrollArea
+
+        scroll = SingleDirectionScrollArea(self)
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("background: transparent; border: none;")
+        content = QWidget()
+        content.setStyleSheet("background: transparent;")
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+        outer.addWidget(scroll)
+        scroll.setWidget(content)
+
+        layout = QVBoxLayout(content)
         layout.setContentsMargins(16, 16, 16, 12)
         layout.setSpacing(10)
 

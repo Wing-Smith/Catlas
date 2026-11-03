@@ -65,7 +65,18 @@ class MainWindow(FluentWindow):
         super().__init__()
         self.setWindowTitle(tr("app.title"))
         self.setWindowIcon(QIcon(str(asset("app.ico"))))
-        self.resize(1280, 800)
+        # 小屏适配：初始尺寸不超过当前屏幕可用区域的 90% / 85%
+        from PySide6.QtGui import QGuiApplication
+
+        _screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        _avail = _screen.availableGeometry() if _screen else None
+        if _avail:
+            self.resize(
+                min(1280, int(_avail.width() * 0.9)),
+                min(800, int(_avail.height() * 0.85)),
+            )
+        else:
+            self.resize(1280, 800)
         self.setMicaEffectEnabled(True)  # Windows 11 Mica 毛玻璃
         self.setAcceptDrops(True)  # 支持把 GeoJSON / SHP / GPKG 拖进窗口导入
 
