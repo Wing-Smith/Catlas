@@ -148,7 +148,7 @@ app/
 **A:** 恭喜你，这证明你下载的是纯正的**原生 C 语言编译产物**（Nuitka 的杰作）。请确保你使用的是 **安装包（`Catlas-Setup-x.x.x.exe`）** 进行安装，而不是把 exe 单独拖出来。安装包会自动处理底层依赖。如果仍缺失，请安装微软官方的 [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe)。 / Congratulations, this proves you are running a pure **native C-compiled binary** (Nuitka's masterpiece). Please make sure you are using the **Installer (`Catlas-Setup-x.x.x.exe`)** instead of dragging the exe out alone. The installer handles low-level dependencies automatically. If it's still missing, please install Microsoft's official [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe).
 
 **Q: 为什么我的 Windows Defender 报毒了？ / Why did Windows Defender flag it as a virus?**
-**A:** 因为 Nuitka 编译出来的机器码权限极高，部分敏感的杀毒软件可能会误报。你可以前往我们的 [GitHub Actions](这里替换为你的Actions链接) 查看开源构建日志，或在本地使用 Nuitka 源码自行编译。 / Because the machine code compiled by Nuitka has high privileges, some sensitive antivirus software may give a false positive. You can check our [GitHub Actions](Replace with your Actions link) for open-source build logs, or compile the source code locally using Nuitka.
+**A:** 因为 Nuitka 编译出来的机器码权限极高，部分敏感的杀毒软件可能会误报。你可以前往我们的 [GitHub Actions] 查看开源构建日志，或在本地使用 Nuitka 源码自行编译。 / Because the machine code compiled by Nuitka has high privileges, some sensitive antivirus software may give a false positive. You can check our [GitHub Actions]for open-source build logs, or compile the source code locally using Nuitka.
 </details>
 
 <details>
