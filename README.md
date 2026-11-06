@@ -17,6 +17,12 @@
 
 </div>
 
+> **📌 Note about the name:**
+> 
+> 如果你们在寻找那个渲染 Minecraft 地图的 Rust 工具，请去搜小写的 `catlas`；如果你们在寻找那个 C++ 空间索引引擎，请**出门左转去 CSDN**。
+> 
+> 这里是 **Catlas (猫图集)**，一个用 Python + PySide6 打造的原生桌面级 OSM 数据抓取与矢量制图工具。因为我们的黑猫（Calico）太可爱了，所以这个名字**必须大写**！🐈‍⬛
+
 - GUI：PySide6 + PySide6-Fluent-Widgets，Windows 11 Mica 毛玻璃
 - 数据：Overpass API 多镜像探测 + 过载退避重试 + 网格分块 + 本地 parquet 缓存
 - 纯 Python 3.14（Windows），core 层零 GUI 依赖
